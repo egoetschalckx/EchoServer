@@ -10,10 +10,14 @@
 			margin: 20px;
 		}
 
-		#graphContainer {
+		#graphCanvasContainer {
 			max-width: 400px;
 			height: 400px;
 			margin: auto;
+		}
+
+		#graphWebGlContainer {
+			height: 400px;
 		}
 	</style>
 </head>
@@ -24,9 +28,10 @@
 	<script src="/Scripts/sigmajs/sigma.min.js"></script>
 	<script src="/Scripts/sigmajs/plugins/sigma.parsers.json.min.js"></script>
 	<script src="/Scripts/sigmajs/plugins/sigma.plugins.dragNodes.min.js"></script>
+	<script src="/Scripts/sigmajs/plugins/sigma.layout.forceAtlas2.min.js"></script>
 	<script src="/Scripts/chat.js"></script>
 
-	<div id="graphContainer"></div>
+	<div id="graphWebGlContainer"></div>
 
 	<div class="container">
 		<input type="text" id="message" />

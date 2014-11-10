@@ -89,6 +89,7 @@
   <ItemGroup>
     <None Include="data.json" />
     <Content Include="packages.config" />
+    <Content Include="Scripts\sigmajs\plugins\sigma.plugins.relativeSize.js" />
     <Content Include="Scripts\sigmajs\README.md" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

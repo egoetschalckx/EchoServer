@@ -6,12 +6,21 @@
 		depthScale;
 
 	// set the render
-	sigma.renderers.def = sigma.renderers.canvas
+	sigma.renderers.def = sigma.renderers.canvas;
 
-	// Instantiate sigma:
 	var _sigma = new sigma({
-		//graph: _treeGraph,
-		container: 'graphContainer'
+		
+	});
+
+	_sigma.addRenderer({
+		container: document.getElementById('graphWebGlContainer'),
+		type: 'webgl',
+		camera: 'cam1',
+		settings: {
+			defaultLabelColor: '#fff',
+			defaultEdgeType: 'curve',
+			drawLabels: 'false'
+		}
 	});
 
 	// Initialize the dragNodes plugin:
@@ -33,9 +42,37 @@
 	chat.client.onNewNode = function (node) {
 		$('#discussion').append('<li><strong>New Node</strong>:&nbsp;&nbsp;' + node.name + '</li>');
 
-		addNode(node, Math.random());
+		var randNumMin = 0;
+		var randNumMax = 1;
 
-		_sigma.refresh();
+		var leftOrRight = (Math.floor(Math.random() * (randNumMax - randNumMin + 1)) + randNumMin)
+
+		var lowestX = 0;
+		var highestX = 0;
+		$(_sigma.graph.nodes()).each(function () {
+			if (this.y != node.depth) {
+				return;
+			}
+
+			if (this.x > highestX) {
+				highestX = this.x;
+			}
+
+			if (this.x < lowestX) {
+				lowestX = this.x;
+			}
+		})
+
+		var x = 0;
+		if (leftOrRight === 0) {
+			x = lowestX - 1;
+		} else {
+			x = highestX + 1;
+		}
+
+		addNode(node, x);
+
+		refreshGraph();
 	};
 
 	chat.client.onDeleteNode = function (nodeId) {
@@ -43,7 +80,7 @@
 
 		deleteNode('' + nodeId);
 
-		_sigma.refresh();
+		refreshGraph();
 	};
 
 	chat.client.onTreeReceived = function (tree) {
@@ -78,7 +115,7 @@
 			}
 		});
 
-		_sigma.refresh();
+		refreshGraph();
 	};
 
 	// Get the user name and store it to prepend to messages.
@@ -89,7 +126,9 @@
 	$('#message').focus();
 
 	// Start the connection.
-	$.connection.hub.start({ transport: ['webSockets'] }).done(function () {
+	$.connection.hub.start({
+			//transport: ['webSockets']
+		}).done(function () {
 		$('#sendmessage').click(function () {
 			// Call the Send method on the hub.
 			chat.server.send($('#displayname').val(), $('#message').val());
@@ -117,10 +156,10 @@
 	function addNode(node, x) {
 		_sigma.graph.addNode({
 			id: 'n' + node.nodeId,
-			label: node.name,
+			label: 'n' + node.nodeId,
 			x: x,
 			y: node.depth,
-			size: 1,
+			size: 0.1,
 			color: getRandomColor()
 		});
 
@@ -129,7 +168,7 @@
 				id: 'e' + node.nodeId,
 				source: 'n' + node.nodeId,
 				target: 'n' + node.parentNodeId,
-				size: 1,
+				size: 0.1,
 				color: '#000000'
 			});
 		}
@@ -160,5 +199,18 @@
 			color += letters[Math.floor(Math.random() * 16)];
 		}
 		return color;
+	}
+
+	function refreshGraph() {
+		var initialSize = 0.1;
+		var nodes = _sigma.graph.nodes();
+		for (var i = 0; i < nodes.length; i++) {
+			var degree = _sigma.graph.degree(nodes[i].id);
+			var degreeSqrt = Math.sqrt(degree);
+			nodes[i].size = initialSize * degreeSqrt;
+		}
+		_sigma.refresh();
+		//_sigma.startForceAtlas2();
+		_sigma.startForceAtlas2({ worker: true, barnesHutOptimize: false });
 	}
 });

@@ -21,7 +21,7 @@ insert into [Node] values ('[reserved]', 2, 1, 3, 1, 0, -1)
 go
 
 if object_id('insertNode') is null
-    exec ('create procedure insertNode as select 1')
+	exec ('create procedure insertNode as select 1')
 go
 alter procedure insertNode(
 	@parentNodeId bigint,
@@ -99,7 +99,7 @@ end
 go
 
 if object_id('insertRandomNode') is null
-    exec ('create procedure insertRandomNode as select 1')
+	exec ('create procedure insertRandomNode as select 1')
 go
 alter procedure insertRandomNode(
 	@newNodeId bigint output
@@ -122,7 +122,7 @@ end
 go
 
 if object_id('deleteNode') is null
-    exec ('create procedure deleteNode as select 1')
+	exec ('create procedure deleteNode as select 1')
 go
 alter procedure deleteNode(
 	@nodeId bigint
@@ -138,7 +138,7 @@ end
 go
 
 if object_id('deleteRandomNode') is null
-    exec ('create procedure deleteRandomNode as select 1')
+	exec ('create procedure deleteRandomNode as select 1')
 go
 alter procedure deleteRandomNode(
 	@deletedNodeId bigint output
@@ -157,7 +157,7 @@ begin
 end
 go
 
---alter function getDescendants(
+--create function getDescendants(
 alter function getDescendants(
 	@parentNodeId bigint,
 	@numGenerations int
@@ -272,6 +272,7 @@ begin
 end
 go
 
+/*
 declare @twoFourId bigint
 execute insertNode 0, '[2.1] 5 2 8 3'
 execute insertNode 0, '[2.2] 8 3 11 4'
@@ -280,11 +281,12 @@ execute insertNode 0, '[2.4] 14 5 17 6', @twoFourId output
 execute insertNode @twoFourId, '[2.4.1] 31 11 48 17'
 execute insertNode @twoFourId, '[2.4.2] 48 17 65 23'
 execute insertNode @twoFourId, '[2.4.3] 65 23 82 29'
+*/
 
 declare @i int = 7
 declare @parentNodeId bigint
 declare @newNodeId bigint
-while (@i < 20)
+while (@i < 512)
 begin
 	execute insertRandomNode  @newNodeId output
 	set @i = @i + 1
@@ -299,7 +301,7 @@ select * from getDescendants(0, -1) as n order by n.[depth] ASC, n.[parent_node_
 --select * from getDescendants(0, 0) order by depth asc
 --select * from getDescendants(@twoFourId, 1) order by depth asc
 
-print '2.4 id = ' + cast(@twoFourId as nvarchar) + ' newNodeId = ' + cast(@newNodeId as nvarchar)
+--print '2.4 id = ' + cast(@twoFourId as nvarchar) + ' newNodeId = ' + cast(@newNodeId as nvarchar)
 --select * from getAncestors(@twoFourId, -1) order by depth asc
 --select * from getAncestors(@twoFourId, 0) order by depth asc
 --select * from getAncestors(@twoFourId, 1) order by depth asc

@@ -42,6 +42,8 @@ namespace EchoServer
 
 		internal static void AddOrRemoveRandomNode()
 		{
+			//return;
+
 			int nodeCount;
 
 			try
@@ -53,7 +55,7 @@ namespace EchoServer
 				throw;
 			}
 
-			var maxNodeCount = 30;
+			var maxNodeCount = 512;
 			if (nodeCount > maxNodeCount)
 			{
 				// remove a random number of nodes
