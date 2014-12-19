@@ -10,32 +10,50 @@
 			margin: 20px;
 		}
 
-		#graphCanvasContainer {
-			max-width: 400px;
-			height: 400px;
-			margin: auto;
+		.graphsContainer {
+			height: 410px;
 		}
 
-		#graphWebGlContainer {
+		.graphContainer {
 			height: 400px;
+			width: 50%;
+		}
+
+		#sigmaWebGl_div {
+			float: left;
+		}
+
+		#googleChart_div {
+			float: right;
 		}
 	</style>
-</head>
-<body>
+
 	<script src="/Scripts/jquery-1.6.4.js"></script>
+
 	<script src="/Scripts/jquery.signalR-2.1.2.js"></script>
 	<script src="signalr/hubs"></script>
+
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script type="text/javascript" src="/Scripts/chatGoogleChart.js"></script>
+
 	<script src="/Scripts/sigmajs/sigma.min.js"></script>
 	<script src="/Scripts/sigmajs/plugins/sigma.parsers.json.min.js"></script>
 	<script src="/Scripts/sigmajs/plugins/sigma.plugins.dragNodes.min.js"></script>
 	<script src="/Scripts/sigmajs/plugins/sigma.layout.forceAtlas2.min.js"></script>
-	<script src="/Scripts/chat.js"></script>
+	<script src="/Scripts/chatSigma.js"></script>
 
-	<div id="graphWebGlContainer"></div>
+	<script src="/Scripts/chatHub.js"></script>
+</head>
+<body>
+	<div class="graphsContainer">
+		<div class="graphContainer" id="sigmaWebGl_div"></div>
+		<div class="graphContainer" id="googleChart_div"></div>
+	</div>
 
 	<div class="container">
 		<input type="text" id="message" />
 		<input type="button" id="sendmessage" value="Send" />
+		<input type="button" id="fancyTree" value="FancyTree" />
 		<input type="hidden" id="displayname" />
 		<ul id="discussion"></ul>
 	</div>

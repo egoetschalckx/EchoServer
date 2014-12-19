@@ -89,6 +89,9 @@
   <ItemGroup>
     <None Include="data.json" />
     <Content Include="packages.config" />
+    <Content Include="Scripts\chatGoogleChart.js" />
+    <Content Include="Scripts\chatHub.js" />
+    <Content Include="Scripts\jquery.ui.treemap.js" />
     <Content Include="Scripts\sigmajs\plugins\sigma.plugins.relativeSize.js" />
     <Content Include="Scripts\sigmajs\README.md" />
     <None Include="Web.Debug.config">
@@ -101,7 +104,7 @@
   <ItemGroup>
     <Content Include="index.html" />
     <None Include="Properties\PublishProfiles\File System %28Debug%29.pubxml" />
-    <Content Include="Scripts\chat.js" />
+    <Content Include="Scripts\chatSigma.js" />
     <None Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />
@@ -121,10 +124,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChatHub.cs" />
-    <Compile Include="Node.cs" />
     <Compile Include="OwinStartup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tree.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EchoServer.Storage\EchoServer.Storage.csproj">
+      <Project>{44b62e30-51ff-4ac4-a118-5379986ecf0a}</Project>
+      <Name>EchoServer.Storage</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TreeLayout\TreeLayout.csproj">
+      <Project>{af797ce5-7b1b-4d3f-9c2e-7ed2e7890109}</Project>
+      <Name>TreeLayout</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

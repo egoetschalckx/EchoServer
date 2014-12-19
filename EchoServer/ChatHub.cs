@@ -1,16 +1,21 @@
-﻿using System;
+﻿using EchoServer.Storage;
 using Microsoft.AspNet.SignalR;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Data;
 using System.Text;
+using Tree;
 
 namespace EchoServer
 {
 	public class ChatHub : Hub
 	{
+		public static int MaxNodeCount = 512;
+		private static string _connStr { get { return ConfigurationManager.ConnectionStrings["EchoServer"].ConnectionString; } }
+
 		public void Hello()
 		{
 			Clients.All.hello();
@@ -30,8 +35,60 @@ namespace EchoServer
 		public void GetTree()
 		{
 			//var nodes = ReadTreeAsync().Result;
-			var tree = ReadTree();
+			var nodeStorage = new NodeStorage(_connStr, new ChatHubNodeEventHandler());
+			var tree = nodeStorage.ReadTree();
 			Clients.Caller.onTreeReceived(tree);
+		}
+
+		public void SetMaxNodeCount(string name, int maxNodeCount)
+		{
+			if (String.IsNullOrWhiteSpace(name) || maxNodeCount < 1)
+			{
+				return;
+			}
+
+			MaxNodeCount = maxNodeCount;
+			SendSystemMessage("MaxNodeCount set to " + MaxNodeCount + " by " + name);
+		}
+
+		public void FancyTree()
+		{
+			var nodeStorage = new NodeStorage(_connStr, new ChatHubNodeEventHandler());
+			var tree = nodeStorage.ReadTree();
+
+			var boxMap = new Dictionary<long, TextInBox>();
+
+			var root = new TextInBox(0, "0", 40, 20);
+			boxMap[0] = root;
+			var defaultTreeForTreeLayout = new DefaultTreeForTreeLayout(root);
+
+			foreach (var node in tree.nodes)
+			{
+				var tib = new TextInBox(node.nodeId, node.nodeId.ToString(), 40, 20);
+				boxMap[node.nodeId] = tib;
+				defaultTreeForTreeLayout.addChild(boxMap[node.parentNodeId], tib);
+			}
+
+			// setup the tree layout configuration
+			var configuration = new DefaultConfiguration();
+
+			var textInBoxNodeExtentProvider = new TextInBoxNodeExtentProvider();
+			var fixedNodeExtentProvider = new FixedNodeExtentProvider(10, 10);
+
+			// create the layout
+			var treeLayout = new TreeLayout(defaultTreeForTreeLayout, textInBoxNodeExtentProvider, configuration);
+
+			var svgTree = new SVGForTextInBoxTree(treeLayout);
+			var xmlDoc = svgTree.GetSvg();
+			xmlDoc.Save("F:/Projects/EchoServer/EchoServer/tree.html");
+
+			// generate the edges and boxes (with text)
+			/*var nodeBounds = treeLayout.getNodeBounds();
+			foreach (var kvp in nodeBounds)
+			{
+				var nodeRect = nodeBounds[kvp.Key];
+				nodeRect.getCenterX();
+			}*/
 		}
 
 		internal static void SendSystemMessage(string message)
@@ -42,225 +99,27 @@ namespace EchoServer
 
 		internal static void AddOrRemoveRandomNode()
 		{
-			//return;
-
-			int nodeCount;
-
-			try
-			{
-				nodeCount = GetNodeCount();
-			}
-			catch (Exception)
-			{
-				throw;
-			}
-
-			var maxNodeCount = 512;
-			if (nodeCount > maxNodeCount)
-			{
-				// remove a random number of nodes
-				var random = new Random();
-				var numNewNodes = random.Next(maxNodeCount / 3);
-
-				for (var i = 0; i < numNewNodes; i++)
-				{
-					try
-					{
-						DeleteRandomNode();
-					}
-					catch (Exception)
-					{
-						throw;
-					}
-				}
-			}
-			else
-			{
-				try
-				{
-					AddRandomNode();
-				}
-				catch (Exception)
-				{
-					throw;
-				}
-			}
+			var nodeStorage = new NodeStorage(_connStr, new ChatHubNodeEventHandler());
+			nodeStorage.AddOrRemoveRandomNode();
 		}
 
-		internal static void AddRandomNode()
+		private class ChatHubNodeEventHandler : INodeEventHandler
 		{
-			var connectionString = ConfigurationManager.ConnectionStrings["EchoServer"].ConnectionString;
-			var newNodeId = default(long?);
-
-			using (var conn = new SqlConnection(connectionString))
+			public void AddNode(Node node)
 			{
-				conn.Open();
-				using (var insertCmd = new SqlCommand("insertRandomNode", conn))
+				if (node == null)
 				{
-					insertCmd.CommandType = CommandType.StoredProcedure;
-					var newNodeIdParam = new SqlParameter("@newNodeId", SqlDbType.BigInt) { Direction = ParameterDirection.Output };
-					insertCmd.Parameters.Add(newNodeIdParam);
-					insertCmd.ExecuteNonQuery();
-					newNodeId = newNodeIdParam.Value as long?;
+					return;
 				}
 
-				if (newNodeId.HasValue)
-				{
-					var node = ReadNode(newNodeId.Value);
-					IHubContext context = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
-					context.Clients.All.onNewNode(node);
-				}
+				IHubContext context = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
+				context.Clients.All.onNewNode(node);
 			}
-		}
 
-		internal static Node ReadNode(long nodeId)
-		{
-			var connectionString = ConfigurationManager.ConnectionStrings["EchoServer"].ConnectionString;
-			var newNodeId = default(long?);
-
-			using (var conn = new SqlConnection(connectionString))
-			using (var readCmd = new SqlCommand("select * from [node] where [node_id] = @nodeId", conn))
+			public void DeleteNode(long deletedNodeId)
 			{
-				conn.Open();
-				readCmd.Parameters.AddWithValue("@nodeId", nodeId);
-				using (var reader = readCmd.ExecuteReader())
-				{
-					reader.Read();
-					var node = Node.FromReader(reader);
-					return node;
-				}
-			}
-		}
-
-		internal static void DeleteRandomNode()
-		{
-			var deletedNodeId = default(long?);
-			var connectionString = ConfigurationManager.ConnectionStrings["EchoServer"].ConnectionString;
-
-			using (var conn = new SqlConnection(connectionString))
-			{
-				conn.Open();
-				using (var insertCmd = new SqlCommand("deleteRandomNode", conn))
-				{
-					insertCmd.CommandType = CommandType.StoredProcedure;
-					var deletedNodeIdParam = new SqlParameter("@deletedNodeId", SqlDbType.BigInt) { Direction = ParameterDirection.Output };
-					insertCmd.Parameters.Add(deletedNodeIdParam);
-					insertCmd.ExecuteNonQuery();
-					deletedNodeId = deletedNodeIdParam.Value as long?;
-				}
-
-				if (deletedNodeId.HasValue)
-				{
-					IHubContext context = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
-					context.Clients.All.onDeleteNode(deletedNodeId.Value);
-				}
-			}
-		}
-
-		internal static int GetNodeCount()
-		{
-			try
-			{
-				var connectionString = ConfigurationManager.ConnectionStrings["EchoServer"].ConnectionString;
-				int nodeCount;
-
-				using (var conn = new SqlConnection(connectionString))
-				using (var countCmd = new SqlCommand("select count(node_id) as nodeCount from [node]", conn))
-				{
-					conn.Open();
-					using (var reader = countCmd.ExecuteReader())
-					{
-						reader.Read();
-						nodeCount = reader.GetInt32(reader.GetOrdinal("nodeCount"));
-						return nodeCount;
-					}
-				}
-			}
-			catch (Exception)
-			{
-				throw;
-			}
-		}
-
-		protected async Task<List<Node>> ReadTreeAsync()
-		{
-			try
-			{
-				var sql = String.Format("select * from getDescendants(0, -1)");
-
-				var connectionString = ConfigurationManager.ConnectionStrings["EchoServer"].ConnectionString;
-
-				// read tree from db
-				using (var conn = new SqlConnection(connectionString))
-				using (var cmd = new SqlCommand(sql, conn))
-				{
-					var nodes = new List<Node>();
-					await conn.OpenAsync();
-					var reader = await cmd.ExecuteReaderAsync();
-					while (await reader.ReadAsync())
-					{
-						var node = Node.FromReader(reader);
-						nodes.Add(node);
-					}
-					return nodes;
-				}
-			}
-			catch (Exception)
-			{
-				throw;
-			}
-		}
-
-		protected Tree ReadTree()
-		{
-			try
-			{
-				var sql = String.Format("select * from getDescendants(0, -1) order by [depth] ASC, [parent_node_id] ASC, (cast([nv] as float) / [dv]) ASC");
-				var connectionString = ConfigurationManager.ConnectionStrings["EchoServer"].ConnectionString;
-				var tree = new Tree();
-				bool firstNode = true;
-
-				using (var conn = new SqlConnection(connectionString))
-				{
-					conn.Open();
-
-					using (var cmd = new SqlCommand(sql, conn))
-					{
-						using (var reader = cmd.ExecuteReader())
-						{
-							while (reader.Read())
-							{
-								var node = Node.FromReader(reader);
-								tree.nodes.Add(node);
-
-								if (firstNode)
-								{
-									tree.maxDepth = node.depth;
-									tree.minDepth = node.depth;
-									firstNode = false;
-								}
-								else
-								{
-									if (node.depth > tree.maxDepth)
-									{
-										tree.maxDepth = node.depth;
-									}
-
-									if (node.depth < tree.minDepth)
-									{
-										tree.minDepth = node.depth;
-									}
-								}
-							}
-						}
-					}
-				}
-
-				return tree;
-			}
-			catch (Exception)
-			{
-				throw;
+				IHubContext context = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
+				context.Clients.All.onDeleteNode(deletedNodeId);
 			}
 		}
 	}

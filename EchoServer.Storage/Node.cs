@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data.SqlClient;
 
-namespace EchoServer
+namespace EchoServer.Storage
 {
 	public class Node
 	{

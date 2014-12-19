@@ -1,15 +1,14 @@
-﻿using System;
+﻿using EchoServer;
+using EchoServer.Storage;
+using Microsoft.AspNet.SignalR;
+using Microsoft.Owin;
+using Owin;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
-
-using Microsoft.AspNet.SignalR;
-using Microsoft.Owin;
-using Owin;
-
-using EchoServer;
 
 [assembly: OwinStartup(typeof(SignalRChat.Startup))]
 namespace SignalRChat
@@ -26,7 +25,7 @@ namespace SignalRChat
 
 			//Task.Run(() => RepeatActionEvery(() => ChatHub.SendSystemMessage(DateTimeOffset.Now.ToString()), TimeSpan.FromSeconds(10), cancellation.Token));
 			Task.Run(() => RepeatActionEvery(() => ChatHub.SendSystemMessage(DateTimeOffset.Now.ToString()), TimeSpan.FromSeconds(10)));
-			Task.Run(() => RepeatActionEvery(() => ChatHub.AddOrRemoveRandomNode(), TimeSpan.FromSeconds(1)));
+			//Task.Run(() => RepeatActionEvery(() => ChatHub.AddOrRemoveRandomNode(), TimeSpan.FromSeconds(3)));
 		}
 
 		public static async Task RepeatActionEvery(Action action, TimeSpan interval)

@@ -7,7 +7,7 @@
     <Name>EchoServer.DB</Name>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
-    <ProjectGuid>{f51034be-1235-4c07-b7f4-0839ea34286b}</ProjectGuid>
+    <ProjectGuid>{b6b5a7cc-b334-490a-8071-677150d80132}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql120DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath>
@@ -57,5 +57,24 @@
   <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
     <Folder Include="Properties" />
+    <Folder Include="Functions" />
+    <Folder Include="Stored Procedures" />
+    <Folder Include="Tables" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Functions\GetAncestors.sql" />
+    <Build Include="Functions\GetDescendants.sql" />
+    <Build Include="Stored Procedures\DeleteNode.sql" />
+    <Build Include="Stored Procedures\DeleteRandomNode.sql" />
+    <Build Include="Stored Procedures\InsertNode.sql" />
+    <Build Include="Stored Procedures\InsertRandomNode.sql" />
+    <Build Include="Tables\Node.sql" />
+    <Build Include="Stored Procedures\ResetTree.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="EchoServer.DB.SqlExpress.publish.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Script.PostDeployment1.sql" />
   </ItemGroup>
 </Project>
