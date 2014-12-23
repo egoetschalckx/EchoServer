@@ -55,7 +55,7 @@ namespace Tree
 					lineNode.SetAttribute("y2", b2.getCenterY().ToString());
 					//lineNode.SetAttribute("stroke-color", "black");
 					//lineNode.SetAttribute("stroke-width", "2");
-					lineNode.SetAttribute("style", "stroke: rgb(0,0,0); stroke-width: 1");
+					lineNode.SetAttribute("style", "stroke: rgb(0,0,0); stroke-width: 1;");
 					svgNode.AppendChild(lineNode);
 
 					// recursion
@@ -88,24 +88,33 @@ namespace Tree
 			// draw the text on top of the box (possibly multiple lines)
 			var lines = textInBox.text.Split(new char[] { '\n' });
 			int fontSize = 12;
-			int x = (int)box.X + fontSize / 2 + 2;
-			int y = (int)box.Y + fontSize + 1;
+			//int x = (int)adjustedBox.X + fontSize / 2 + 2;
+			//int y = (int)adjustedBox.Y + fontSize + 1;
 
-			var style = String.Format("font-family: sans-serif; font-size: {0}px;", fontSize);
+			int x = (int)(adjustedBox.X + (adjustedBox.Width / 2));
+			int y = (int)(adjustedBox.Y + (adjustedBox.Height / 2) + 5);
+
+			var style = String.Format("font-family: sans-serif; font-size: {0}px; text-anchor=middle;", fontSize);
 			for (int i = 0; i < lines.Length; i++)
 			{
-				//result.Append(text(x, y, style, lines[i]));
-				//result.AppendFormat("text(x={0}, y={1}, text={2})\n", x, y, lines[i]);
 				//<text x="200" y="80" font-family="Verdana" font-size="25" fill="blue" stroke="yellow" stroke-width="0.5" text-anchor="middle">MSDN Magazine</text>
 				var textNode = doc.CreateElement("text");
 				textNode.SetAttribute("x", x.ToString());
 				textNode.SetAttribute("y", y.ToString());
-				/*textNode.SetAttribute("font-family", "sans-serif");
-				textNode.SetAttribute("font-size", fontSize.ToString());*/
-				//textNode.SetAttribute("text-anchor", "middle");
-				textNode.SetAttribute("style", style);
+				//textNode.SetAttribute("style", style);
+				textNode.SetAttribute("text-anchor", "middle");
 				textNode.InnerText = lines[i];
 				svgNode.AppendChild(textNode);
+
+				/*var txtBlipNode = doc.CreateElement("rect");
+				txtBlipNode.SetAttribute("x", x.ToString());
+				txtBlipNode.SetAttribute("y", y.ToString());
+				txtBlipNode.SetAttribute("width", "1");
+				txtBlipNode.SetAttribute("height", "1");
+
+				txtBlipNode.SetAttribute("fill", "black");
+				txtBlipNode.SetAttribute("stroke", "black");
+				svgNode.AppendChild(txtBlipNode);*/
 
 				y += fontSize;
 			}

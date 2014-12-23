@@ -23,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sql", "sql", "{AD085F03-D95
 	ProjectSection(SolutionItems) = preProject
 		echoserver.sql = echoserver.sql
 		reset.sql = reset.sql
+		reset2.sql = reset2.sql
 	EndProjectSection
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "EchoServer.DB", "EchoServer.DB\EchoServer.DB.sqlproj", "{B6B5A7CC-B334-490A-8071-677150D80132}"

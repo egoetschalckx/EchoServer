@@ -33,45 +33,22 @@ namespace EchoServer.Storage
 
 		public void AddOrRemoveRandomNode()
 		{
-			int nodeCount;
+			int nodeCount = nodeCount = GetNodeCount();
 
 			try
 			{
-				nodeCount = GetNodeCount();
+				if (nodeCount > _maxNodeCount)
+				{
+					DeleteRandomNode();
+				}
+				else
+				{
+					AddRandomNode();
+				}
 			}
 			catch (Exception)
 			{
 				throw;
-			}
-
-			if (nodeCount > _maxNodeCount)
-			{
-				// remove a "random" number of nodes
-				var random = new Random();
-				var numNewNodes = random.Next(_maxNodeCount / 3);
-
-				for (var i = 0; i < numNewNodes; i++)
-				{
-					try
-					{
-						DeleteRandomNode();
-					}
-					catch (Exception)
-					{
-						throw;
-					}
-				}
-			}
-			else
-			{
-				try
-				{
-					AddRandomNode();
-				}
-				catch (Exception)
-				{
-					throw;
-				}
 			}
 		}
 

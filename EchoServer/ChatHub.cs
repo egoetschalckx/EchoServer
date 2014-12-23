@@ -72,11 +72,8 @@ namespace EchoServer
 			// setup the tree layout configuration
 			var configuration = new DefaultConfiguration();
 
-			var textInBoxNodeExtentProvider = new TextInBoxNodeExtentProvider();
-			var fixedNodeExtentProvider = new FixedNodeExtentProvider(10, 10);
-
 			// create the layout
-			var treeLayout = new TreeLayout(defaultTreeForTreeLayout, textInBoxNodeExtentProvider, configuration);
+			var treeLayout = new TreeLayout(defaultTreeForTreeLayout, configuration);
 
 			var svgTree = new SVGForTextInBoxTree(treeLayout);
 			var xmlDoc = svgTree.GetSvg();

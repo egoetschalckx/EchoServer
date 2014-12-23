@@ -12,10 +12,7 @@
 
 	public interface Configuration
 	{
-		bool ExecuteFirstWalk { get; set; }
 		bool ExecuteShiftsInFirstWalk { get; set; }
-		bool ExecuteLevelSizeCalc { get; set; }
-		bool ExecuteSecondWalk { get; set; }
 		Location RootLocation { get; set; }
 		AlignmentInLevel AlignmentInLevel { get; set; }
 		double GapBetweenAdjacentLevels { get; set; }

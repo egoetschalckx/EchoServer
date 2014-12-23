@@ -70,6 +70,7 @@
     <Build Include="Stored Procedures\InsertRandomNode.sql" />
     <Build Include="Tables\Node.sql" />
     <Build Include="Stored Procedures\ResetTree.sql" />
+    <Build Include="Stored Procedures\BrokenTree1.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="EchoServer.DB.SqlExpress.publish.xml" />

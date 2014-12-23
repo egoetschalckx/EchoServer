@@ -16,20 +16,6 @@ namespace TreeHarness
 			var nodeStorage = new NodeStorage(_connStr, new TreeHarnessNodeEventHandler());
 			var nodeCount = nodeStorage.GetNodeCount();
 
-			while (nodeCount < 1024)
-			{
-				try
-				{
-					nodeStorage.AddRandomNode();
-				}
-				catch (Exception)
-				{
-					break; // not good
-				}
-
-				nodeCount++;
-			}
-
 			//makeShiftedSvg(SampleTreeFactory.createSampleTree3());
 			//makeUnshiftedSvg(SampleTreeFactory.createSampleTree3());
 
@@ -44,11 +30,11 @@ namespace TreeHarness
 				ExecuteShiftsInFirstWalk = true
 			};
 
-			var textInBoxNodeExtentProvider = new TextInBoxNodeExtentProvider();
-			var fixedNodeExtentProvider = new FixedNodeExtentProvider(20, 20);
+			//var textInBoxNodeExtentProvider = new TextInBoxNodeExtentProvider();
+			//var fixedNodeExtentProvider = new FixedNodeExtentProvider(20, 20);
 
 			var stopwatch = Stopwatch.StartNew();
-			var treeLayout = new TreeLayout(tree, textInBoxNodeExtentProvider, configuration);
+			var treeLayout = new TreeLayout(tree, configuration);
 			stopwatch.Stop();
 			var timeTreeCalc = stopwatch.ElapsedMilliseconds;
 
@@ -67,11 +53,8 @@ namespace TreeHarness
 				ExecuteShiftsInFirstWalk = false
 			};
 
-			var textInBoxNodeExtentProvider = new TextInBoxNodeExtentProvider();
-			var fixedNodeExtentProvider = new FixedNodeExtentProvider(20, 20);
-
 			var stopwatch = Stopwatch.StartNew();
-			var treeLayout = new TreeLayout(tree, textInBoxNodeExtentProvider, configuration);
+			var treeLayout = new TreeLayout(tree, configuration);
 			stopwatch.Stop();
 			var timeTreeCalc = stopwatch.ElapsedMilliseconds;
 
@@ -90,13 +73,13 @@ namespace TreeHarness
 
 			var boxMap = new Dictionary<long, TextInBox>();
 
-			var root = new TextInBox(0, "0", 40, 20);
+			var root = new TextInBox(0, "0", 20, 20);
 			boxMap[0] = root;
 			var defaultTreeForTreeLayout = new DefaultTreeForTreeLayout(root);
 
 			foreach (var node in tree.nodes)
 			{
-				var tib = new TextInBox(node.nodeId, node.nodeId.ToString(), 40, 20);
+				var tib = new TextInBox(node.nodeId, node.nodeId.ToString(), 20, 20);
 				boxMap[node.nodeId] = tib;
 				defaultTreeForTreeLayout.addChild(boxMap[node.parentNodeId], tib);
 			}

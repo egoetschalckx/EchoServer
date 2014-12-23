@@ -16,21 +16,21 @@
 	chat.client.onNewNode = function (node) {
 		$('#discussion').append('<li><strong>New Node</strong>:&nbsp;&nbsp;' + node.name + '</li>');
 
-		chatGoogleChart.addNode(node, true);
+		//chatGoogleChart.addNode(node, true);
 		chatSigma.addNode(node, true);
 	};
 
 	chat.client.onDeleteNode = function (nodeId) {
 		$('#discussion').append('<li><strong>Delete Node</strong>:&nbsp;&nbsp;' + nodeId + '</li>');
 
-		chatGoogleChart.deleteNode(nodeId, true);
-		chatSigma.deleteNode(nodeId, true);
+		//chatGoogleChart.deleteNode(nodeId, true);
+		//chatSigma.deleteNode(nodeId, true);
 	};
 
 	chat.client.onTreeReceived = function (tree) {
 		$('#discussion').append('<li><strong>Recieved Tree</strong>:&nbsp;&nbsp;</li>');
 
-		chatGoogleChart.refreshTree(tree, true);
+		//chatGoogleChart.refreshTree(tree, true);
 		chatSigma.refreshTree(tree, true);
 	};
 

@@ -16,7 +16,7 @@
 
 		.graphContainer {
 			height: 400px;
-			width: 50%;
+			width: 95%;
 		}
 
 		#sigmaWebGl_div {
@@ -33,13 +33,17 @@
 	<script src="/Scripts/jquery.signalR-2.1.2.js"></script>
 	<script src="signalr/hubs"></script>
 
-	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
-	<script type="text/javascript" src="/Scripts/chatGoogleChart.js"></script>
+	<!--<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script type="text/javascript" src="/Scripts/chatGoogleChart.js"></script>-->
 
 	<script src="/Scripts/sigmajs/sigma.min.js"></script>
 	<script src="/Scripts/sigmajs/plugins/sigma.parsers.json.min.js"></script>
 	<script src="/Scripts/sigmajs/plugins/sigma.plugins.dragNodes.min.js"></script>
 	<script src="/Scripts/sigmajs/plugins/sigma.layout.forceAtlas2.min.js"></script>
+
+	<!--<script src="/Scripts/sigmajs/plugins/sigma.layout.buchheim/node.js"></script>-->
+	<script src="/Scripts/sigmajs/plugins/sigma.layout.buchheim/treeLayout.js"></script>
+
 	<script src="/Scripts/chatSigma.js"></script>
 
 	<script src="/Scripts/chatHub.js"></script>
@@ -47,7 +51,7 @@
 <body>
 	<div class="graphsContainer">
 		<div class="graphContainer" id="sigmaWebGl_div"></div>
-		<div class="graphContainer" id="googleChart_div"></div>
+		<!--<div class="graphContainer" id="googleChart_div"></div>-->
 	</div>
 
 	<div class="container">

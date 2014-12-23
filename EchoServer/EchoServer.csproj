@@ -92,6 +92,7 @@
     <Content Include="Scripts\chatGoogleChart.js" />
     <Content Include="Scripts\chatHub.js" />
     <Content Include="Scripts\jquery.ui.treemap.js" />
+    <Content Include="Scripts\sigmajs\plugins\sigma.layout.buchheim\treeLayout.js" />
     <Content Include="Scripts\sigmajs\plugins\sigma.plugins.relativeSize.js" />
     <Content Include="Scripts\sigmajs\README.md" />
     <None Include="Web.Debug.config">

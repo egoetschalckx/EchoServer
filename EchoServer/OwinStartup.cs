@@ -24,8 +24,8 @@ namespace SignalRChat
 			var cancellation = new CancellationTokenSource();
 
 			//Task.Run(() => RepeatActionEvery(() => ChatHub.SendSystemMessage(DateTimeOffset.Now.ToString()), TimeSpan.FromSeconds(10), cancellation.Token));
-			Task.Run(() => RepeatActionEvery(() => ChatHub.SendSystemMessage(DateTimeOffset.Now.ToString()), TimeSpan.FromSeconds(10)));
-			//Task.Run(() => RepeatActionEvery(() => ChatHub.AddOrRemoveRandomNode(), TimeSpan.FromSeconds(3)));
+			Task.Run(() => RepeatActionEvery(() => ChatHub.SendSystemMessage(DateTimeOffset.Now.ToString()), TimeSpan.FromSeconds(30)));
+			//Task.Run(() => RepeatActionEvery(() => ChatHub.AddOrRemoveRandomNode(), TimeSpan.FromSeconds(10)));
 		}
 
 		public static async Task RepeatActionEvery(Action action, TimeSpan interval)

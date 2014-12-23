@@ -36,26 +36,9 @@ namespace Tree
 			return tree;
 		}
 
-		private readonly NodeExtentProvider nodeExtentProvider;
-
-		public NodeExtentProvider getNodeExtentProvider()
-		{
-			return nodeExtentProvider;
-		}
-
-		private double getNodeHeight(ITreeNode node)
-		{
-			return nodeExtentProvider.getHeight(node);
-		}
-
-		private double getNodeWidth(ITreeNode node)
-		{
-			return nodeExtentProvider.getWidth(node);
-		}
-
 		private double getWidthOrHeightOfNode(ITreeNode treeNode, bool returnWidth)
 		{
-			return returnWidth ? getNodeWidth(treeNode) : getNodeHeight(treeNode);
+			return returnWidth ? treeNode.Width : treeNode.Height;
 		}
 
 		private double getNodeThickness(ITreeNode treeNode)
@@ -89,12 +72,10 @@ namespace Tree
 
 		private void updateBounds(ITreeNode node, double centerX, double centerY)
 		{
-			double width = getNodeWidth(node);
-			double height = getNodeHeight(node);
-			double left = centerX - width / 2;
-			double right = centerX + width / 2;
-			double top = centerY - height / 2;
-			double bottom = centerY + height / 2;
+			double left = centerX - node.Width / 2;
+			double right = centerX + node.Width / 2;
+			double top = centerY - node.Height / 2;
+			double bottom = centerY + node.Height / 2;
 
 			if (boundsLeft > left)
 			{
@@ -652,12 +633,10 @@ namespace Tree
 				{
 					var node = kvp.Key;
 					var pos = kvp.Value;
-					double w = getNodeWidth(node);
-					double h = getNodeHeight(node);
-					double x = pos.X - w / 2;
-					double y = pos.Y - h / 2;
+					double x = pos.X - node.Width / 2;
+					double y = pos.Y - node.Height / 2;
 
-					nodeBounds[node] = new Rectangle(x, y, w, h);
+					nodeBounds[node] = new Rectangle(x, y, node.Width, node.Height);
 				}
 			}
 
@@ -666,123 +645,18 @@ namespace Tree
 
 		public TreeLayout(
 			TreeForTreeLayout tree,
-			NodeExtentProvider nodeExtentProvider,
 			Configuration configuration)
 		{
 			this.tree = tree;
-			this.nodeExtentProvider = nodeExtentProvider;
 			this.configuration = configuration;
 
 			ITreeNode r = tree.getRoot();
 
-			if (configuration.ExecuteFirstWalk)
-			{
-				firstWalk(r, default(ITreeNode), configuration.ExecuteShiftsInFirstWalk);
-			}
-			if (configuration.ExecuteLevelSizeCalc)
-			{
-				calcSizeOfLevels(r, 0);
-			}
+			firstWalk(r, default(ITreeNode), configuration.ExecuteShiftsInFirstWalk);
 
-			if (configuration.ExecuteSecondWalk)
-			{
-				secondWalk(r, -getPrelim(r), 0, 0);
-			}
-		}
+			calcSizeOfLevels(r, 0);
 
-		private void addUniqueNodes(Dictionary<ITreeNode, ITreeNode> nodes, ITreeNode newNode)
-		{
-			if (nodes[newNode] != null)
-			{
-				throw new Exception(String.Format("Node used more than once in tree: {0}", newNode));
-			}
-
-			foreach (ITreeNode n in tree.getChildren(newNode))
-			{
-				addUniqueNodes(nodes, n);
-			}
-		}
-
-		public void checkTree()
-		{
-			//Dictionary<ITreeNode, ITreeNode> nodes = this.useIdentity ? new IdentityHashMap<ITreeNode, ITreeNode>() : new HashMap<ITreeNode,ITreeNode>();
-
-			Dictionary<ITreeNode, ITreeNode> nodes = new Dictionary<ITreeNode, ITreeNode>();
-
-			// Traverse the tree and check if each node is only used once.
-			addUniqueNodes(nodes, tree.getRoot());
-		}
-
-		private void dumpTree(object output, ITreeNode node, int indent, DumpConfiguration dumpConfiguration)
-		{
-			var sb = new StringBuilder();
-			for (int i = 0; i < indent; i++)
-			{
-				sb.Append(dumpConfiguration.indent);
-			}
-
-			if (dumpConfiguration.includeObjectToString)
-			{
-				sb.Append("[");
-				/*
-				sb.Append(node.GetClass().getName() + "@" + Integer.toHexString(node.hashCode()));
-
-				if (node.hashCode() != System.identityHashCode(node))
-				{
-					sb.Append("/identityHashCode:");
-					sb.Append(Integer.toHexString(System.identityHashCode(node)));
-				}
-				*/
-
-				sb.Append("]");
-			}
-
-			sb.Append(node != null ? node.ToString() : "null");
-
-			if (dumpConfiguration.includeNodeSize)
-			{
-				sb.Append(" (size: ");
-				sb.Append(getNodeWidth(node));
-				sb.Append("x");
-				sb.Append(getNodeHeight(node));
-				sb.Append(")");
-			}
-
-			//output.println(sb.ToString());
-
-			foreach (var n in tree.getChildren(node))
-			{
-				dumpTree(output, n, indent + 1, dumpConfiguration);
-			}
-		}
-
-		public class DumpConfiguration
-		{
-			public readonly String indent;
-			public readonly bool includeNodeSize;
-			public readonly bool includeObjectToString;
-
-			public DumpConfiguration(String indent, bool includeNodeSize, bool includePointer)
-			{
-				this.indent = indent;
-				this.includeNodeSize = includeNodeSize;
-				this.includeObjectToString = includePointer;
-			}
-
-			public DumpConfiguration()
-				: this("    ", false, false)
-			{
-			}
-		}
-
-		public void dumpTree(object printStream, DumpConfiguration dumpConfiguration)
-		{
-			dumpTree(printStream, tree.getRoot(), 0, dumpConfiguration);
-		}
-
-		public void dumpTree(object printStream)
-		{
-			dumpTree(printStream, new DumpConfiguration());
+			secondWalk(r, -getPrelim(r), 0, 0);
 		}
 	}
 }
