@@ -504,20 +504,27 @@
 			}
 		}
 
-		TreeLayout.prototype.calcTree = function(rootNodeId) {
-
-			/*this.addNode(rootNodeId, -1);
-			this.addNode("n1", rootNodeId);
-			this.addNode("n2", rootNodeId);
-			this.addNode("n11", "n1");
-			this.addNode("n12", "n1");
-			this.addNode("n21", "n2");*/
+		TreeLayout.prototype.calcTree = function (rootNodeId) {
 
 			var sigmaNodes = this.sigInst.graph.nodes();
 			var sigmaEdges = this.sigInst.graph.edges();
 
 			for (var nodeIndex in sigmaNodes) {
 				var node = sigmaNodes[nodeIndex];
+
+				node.mod = 0;
+				node.threadId = null;
+				node.ancestorId = node.id;
+				node.preliminaryX = 0;
+				node.change = 0;
+				node.shift = 0;
+				node.number = 0;
+				node.posX = 0;
+				node.posY = 0;
+				node.rectX = 0;
+				node.rectY = 0;
+				node.doCountChildren = true;
+
 				var foundParent = false;
 
 				// find parent node id
@@ -527,6 +534,7 @@
 					if (edge.target === node.id) {
 						//var parentId = edge.source;
 						this.addNode(node.id, edge.source, 1, 1);
+						node.parentId = edge.source;
 						foundParent = true;
 						break;
 					}
@@ -535,6 +543,7 @@
 				if (!foundParent) {
 					// its the/a root node
 					this.addNode(node.id, -1, 1, 1);
+					node.parentId = -1;
 				}
 			}
 

@@ -44,7 +44,10 @@
 			x: x,
 			y: node.depth,
 			size: 1,
-			color: this.getRandomColor()
+			color: this.getRandomColor(),
+			parentId: 'n' + node.parentNodeId,
+			//nodeIndex: this._sigma.graph.nodes().length,
+			//parentIndex: 
 		});
 
 		if (node.parentNodeId >= 0) {
@@ -99,7 +102,8 @@
 			x: 0,
 			y: 0,
 			size: 8,
-			color: this.getRandomColor()
+			color: this.getRandomColor(),
+			parentId: -1
 		});
 
 		$(tree.nodes).each(function () {
